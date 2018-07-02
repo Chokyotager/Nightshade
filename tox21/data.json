@@ -1,0 +1,24 @@
+{
+
+  "training": {
+    "NR-AHR": "data/nr-ahr.smiles",
+    "NR-AR-LBD": "data/nr-ar-lbd.smiles",
+    "NR-AR": "data/nr-ar.smiles",
+    "NR-aromatase": "data/nr-aromatase.smiles",
+    "NR-ER-LBD": "data/nr-er-lbd.smiles",
+    "NR-ER": "data/nr-er.smiles",
+    "NR-PPAR-gamma": "data/nr-ppar-gamma.smiles",
+
+    "SR-ARE": "data/sr-are.smiles",
+    "SR-ATAD5": "data/sr-atad5.smiles",
+    "SR-HSE": "data/sr-hse.smiles",
+    "SR-MMP": "data/sr-mmp.smiles",
+    "SR-p53": "data/sr-p53.smiles"
+  },
+
+  "testing": {
+    "test": "data/tox21_10k_challenge_test.smiles",
+    "score": "data/tox21_10k_challenge_score.smiles"
+  }
+
+}
