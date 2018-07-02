@@ -1,6 +1,7 @@
 import os
 import json
 import numpy as np
+import random
 
 data_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + "/tox21/"
 
@@ -40,6 +41,10 @@ class Data ():
 
         self.compounds = data
         self.smiles = list(data.keys())
+
+        # Shuffle
+        random.shuffle(self.smiles)
+
         self.smiles_length = len(self.smiles)
 
         self.smiles_vocabulary = vocabulary
@@ -49,7 +54,7 @@ class Data ():
 
         pass
 
-    def getData (self, amount=10):
+    def getData (self, amount=10, shuffle=True):
 
         def createLabels (indices):
             # Create multi-class labels
@@ -61,6 +66,9 @@ class Data ():
 
             return labels
 
+        if shuffle:
+            random.shuffle(self.smiles)
+
 
         smiles_raw = list()
         smiles = list()
@@ -68,7 +76,7 @@ class Data ():
 
         for i in range(amount):
             smile_raw = self.smiles[self.index % self.smiles_length]
-            smile = self.indexSmiles(smile_raw)
+            smile = self.indexSmiles(smile_raw, padding=200)
             label = createLabels([self.classes.index(x) for x in self.compounds[smile_raw]["labels"]])
 
             smiles_raw.append(smile_raw)
@@ -79,7 +87,7 @@ class Data ():
 
         return smiles, labels, smiles_raw
 
-    def indexSmiles (self, string):
+    def indexSmiles (self, string, padding=0):
 
         indices = list()
 
@@ -92,7 +100,7 @@ class Data ():
                 truncation = string[i:i+j]
                 if truncation in self.smiles_vocabulary:
                     index = self.smiles_vocabulary.index(truncation)
-                    indices.append(index)
+                    indices.append(index + 1)
 
                     i += j
                     break
@@ -102,5 +110,9 @@ class Data ():
 
             # Ignore if key is unknown.
             i += 1
+
+        if padding > 0:
+            pad_amount = padding - len(indices)
+            indices = [0] * pad_amount + indices
 
         return indices

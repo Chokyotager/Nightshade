@@ -2,7 +2,7 @@ import tensorflow as tf
 
 class Model ():
 
-    def __init__ (self, smiles_vocabulary, rnn_size=[64, 3], classification_size=12):
+    def __init__ (self, smiles_vocabulary, rnn_size=[300, 2], classification_size=12):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -23,7 +23,8 @@ class Model ():
 
         self.batch_size = tf.placeholder(shape=[], dtype=tf.int32)
 
-        input_one_hot = tf.one_hot(self.input, depth=self.smiles_vocabulary_size, axis=None)
+        # +1 for padding values
+        input_one_hot = tf.one_hot(self.input, depth=self.smiles_vocabulary_size + 1, axis=None)
 
         """
         Create LSTM layers.
@@ -61,10 +62,8 @@ class Model ():
 
             dense1 = tf.layers.dense(last_output, 128, activation=tf.nn.selu)
             dense2 = tf.layers.dense(dense1, 128, activation=tf.nn.selu)
-            dense3 = tf.layers.dense(dense2, 128, activation=tf.nn.selu)
-            dense4 = tf.layers.dense(dense3, 128, activation=tf.nn.selu)
 
-            logits = tf.layers.dense(dense4, self.classification_size, activation=None)
+            logits = tf.layers.dense(dense2, self.classification_size, activation=None)
 
             self.output = tf.nn.sigmoid(logits)
             #self.classification = tf.argmax(self.output, axis=None)
