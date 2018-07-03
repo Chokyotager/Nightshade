@@ -128,3 +128,42 @@ class Data ():
             readable.append(string_label)
 
         return readable
+
+class Scorer (Data):
+
+    def __init__ (self):
+
+        # Load data into sequence
+        sets = data_info["training"].keys()
+        keys = list(sets)
+
+        compounds = [x.split("\t") for x in open(data_dir + data_info["testing"]["score"]).read().split("\n")[1:-1]]
+        data = dict()
+
+        # Interpret the labels
+        labels = [x.split("\t") for x in open(data_dir + data_info["testing"]["score_sheet"]).read().split("\n")[:-1]]
+
+        for compound in compounds:
+            tag = compound[1]
+
+            # Locate tag in labels
+            target = [x for x in labels if x[0] == tag][0][1:]
+            target = [keys[i] for i, x in enumerate(target) if x == "1"]
+
+            data[compound[0]] = {"synonym": tag, "labels": target}
+
+        self.classes = keys
+        self.classes_amount = len(self.classes)
+
+        self.compounds = data
+        self.smiles = list(data.keys())
+
+        self.smiles_length = len(self.smiles)
+
+        self.smiles_vocabulary = vocabulary
+        self.smiles_vocabulary_size = len(self.smiles_vocabulary)
+
+        self.index = 0
+
+    def getEvaluations (self):
+        return self.getData(amount=self.smiles_length, shuffle=False)
