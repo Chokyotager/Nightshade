@@ -2,7 +2,7 @@ import tensorflow as tf
 
 class Model ():
 
-    def __init__ (self, smiles_vocabulary, rnn_size=[300, 2], classification_size=12):
+    def __init__ (self, smiles_vocabulary, rnn_size=[300, 2], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -12,6 +12,8 @@ class Model ():
         self.smiles_vocabulary_size = len(smiles_vocabulary)
         self.rnn_size = rnn_size
         self.classification_size = classification_size
+
+        self.dropout = dropout
 
         """
         Take in SMILES character indices.
@@ -34,7 +36,11 @@ class Model ():
 
             def rnn_cell (size, activation=tf.nn.selu):
                 cell = tf.contrib.rnn.GRUCell(size, activation=activation)
-                return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.8)
+
+                if self.dropout:
+                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=0.8, input_keep_prob=0.9, output_keep_prob=0.9)
+                else:
+                    return cell
 
             cells = tf.contrib.rnn.MultiRNNCell([rnn_cell(self.rnn_size[0]) for i in range(self.rnn_size[1])])
 
