@@ -38,7 +38,7 @@ class Model ():
                 cell = tf.contrib.rnn.GRUCell(size, activation=activation)
 
                 if self.dropout:
-                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=0.8, input_keep_prob=0.9, output_keep_prob=0.9)
+                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.8)
                 else:
                     return cell
 
