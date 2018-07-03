@@ -56,28 +56,19 @@ class Data ():
 
     def getData (self, amount=10, shuffle=True):
 
-        def createLabels (indices):
-            # Create multi-class labels
-
-            labels = np.zeros(shape=[self.classes_amount])
-
-            for index in indices:
-                labels += np.eye(self.classes_amount)[index]
-
-            return labels
-
-        if shuffle:
-            random.shuffle(self.smiles)
-
 
         smiles_raw = list()
         smiles = list()
         labels = list()
 
+        if shuffle:
+            random.shuffle(self.smiles)
+
         for i in range(amount):
+
             smile_raw = self.smiles[self.index % self.smiles_length]
             smile = self.indexSmiles(smile_raw, padding=200)
-            label = createLabels([self.classes.index(x) for x in self.compounds[smile_raw]["labels"]])
+            label = self.createLabels([self.classes.index(x) for x in self.compounds[smile_raw]["labels"]])
 
             smiles_raw.append(smile_raw)
             smiles.append(smile)
@@ -86,6 +77,16 @@ class Data ():
             self.index += 1
 
         return smiles, labels, smiles_raw
+
+    def createLabels (self, indices):
+        # Create multi-class labels
+
+        labels = np.zeros(shape=[self.classes_amount])
+
+        for index in indices:
+            labels += np.eye(self.classes_amount)[index]
+
+        return labels
 
     def indexSmiles (self, string, padding=0):
 
