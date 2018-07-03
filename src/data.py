@@ -13,7 +13,7 @@ class Data ():
     def __init__ (self):
 
         # Load data into sequence
-        sets = data_info["training"].keys()
+        sets = sorted(data_info["training"].keys(), key=str.lower)
 
         # Map as such:
         # [SMILES, label, drugID]
@@ -134,14 +134,16 @@ class Scorer (Data):
     def __init__ (self):
 
         # Load data into sequence
-        sets = data_info["training"].keys()
-        keys = list(sets)
 
         compounds = [x.split("\t") for x in open(data_dir + data_info["testing"]["score"]).read().split("\n")[1:-1]]
         data = dict()
 
         # Interpret the labels
-        labels = [x.split("\t") for x in open(data_dir + data_info["testing"]["score_sheet"]).read().split("\n")[:-1]]
+        scores = open(data_dir + data_info["testing"]["score_sheet"]).read().split("\n")
+
+        keys = sorted(scores[0].split("\t")[1:], key=str.lower)
+
+        labels = [x.split("\t") for x in scores[1:-1]]
 
         for compound in compounds:
             tag = compound[1]
