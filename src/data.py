@@ -117,3 +117,14 @@ class Data ():
             indices = [0] * pad_amount + indices
 
         return indices
+
+    def labelsToReadable (self, labels):
+
+        indices = list(np.where(labels == 1)[0])
+        readable = list()
+
+        for index in indices:
+            string_label = self.classes[index]
+            readable.append(string_label)
+
+        return readable
