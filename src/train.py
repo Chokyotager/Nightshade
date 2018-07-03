@@ -4,7 +4,7 @@ import tensorflow as tf
 import os
 
 main_dir = os.path.dirname(os.path.abspath(__file__))
-run_name = "Solanaceae-E"
+run_name = "Solanaceae-H"
 
 d = data.Data()
 m = model.Model(d.smiles_vocabulary)
