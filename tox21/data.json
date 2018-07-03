@@ -18,7 +18,9 @@
 
   "testing": {
     "test": "data/tox21_10k_challenge_test.smiles",
-    "score": "data/tox21_10k_challenge_score.smiles"
+    "test_sheet": "data/tox21_10k_challenge_test.sdf",
+    "score": "data/tox21_10k_challenge_score.smiles",
+    "score_sheet": "data/tox21_10k_challenge_score.txt"
   }
 
 }
