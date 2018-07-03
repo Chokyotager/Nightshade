@@ -33,7 +33,8 @@ class Model ():
         with tf.variable_scope("RNN", reuse=tf.AUTO_REUSE):
 
             def rnn_cell (size, activation=tf.nn.selu):
-                return tf.contrib.rnn.GRUCell(size, activation=activation)
+                cell = tf.contrib.rnn.GRUCell(size, activation=activation)
+                return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=0.8, input_keep_prob=0.9, output_keep_prob=0.9)
 
             cells = tf.contrib.rnn.MultiRNNCell([rnn_cell(self.rnn_size[0]) for i in range(self.rnn_size[1])])
 
