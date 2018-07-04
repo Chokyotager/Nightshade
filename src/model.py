@@ -2,7 +2,8 @@ import tensorflow as tf
 
 class Model ():
 
-    def __init__ (self, smiles_vocabulary, rnn_size=[300, 2], classification_size=12, dropout=True):
+    # Sol-L: 300, 2
+    def __init__ (self, smiles_vocabulary, rnn_size=[32, 3], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
