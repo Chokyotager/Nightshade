@@ -132,10 +132,12 @@ class Data ():
                     index = self.smiles_vocabulary.index(truncation)
                     indices.append(index + 1)
 
-                    i += j
+                    i += (j - 1)
                     break
 
                 else:
+                    if j == 1:
+                        print("Unknown SMILES indexing key {}. Skipping.".format(truncation))
                     continue
 
             # Ignore if key is unknown.
