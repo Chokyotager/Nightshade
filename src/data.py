@@ -60,7 +60,6 @@ class Data ():
 
     def getData (self, amount=10, shuffle=True, map_neutrals=False):
 
-
         smiles_raw = list()
         smiles = list()
         labels = list()
@@ -92,7 +91,6 @@ class Data ():
             ret += np.eye(self.classes_amount)[self.classes.index(label)]
 
         return ret
-
 
     def createLabels (self, positive, negative, map_neutrals=False, neutral_map=0.5):
         # Create multi-class labels
@@ -255,3 +253,9 @@ class Validator (Data):
         self.smiles_vocabulary_size = len(self.smiles_vocabulary)
 
         self.index = 0
+
+    def getValidationSet (self, amount=20):
+
+        smiles, labels, weights, smiles_raw = self.getData(amount=amount, shuffle=False)
+
+        return smiles, labels
