@@ -25,6 +25,13 @@ class Model ():
 
         self.batch_size = tf.placeholder(shape=[], dtype=tf.int32)
 
+        """
+        Loss weights: implementation to negate
+        samples where the HTS result was inconclusive.
+        """
+
+        self.loss_weights = tf.ones_like(self.expect, dtype=tf.float32)
+
         # +1 for padding values
         input_one_hot = tf.one_hot(self.input, depth=self.smiles_vocabulary_size + 1, axis=None)
 
@@ -89,7 +96,7 @@ class Model ():
             Implementation: TensorFlow logits v2.
             """
 
-            self.individual_loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=self.expect, logits=logits)
+            self.individual_loss = tf.losses.sigmoid_cross_entropy(multi_class_labels=self.expect, logits=logits, weights=self.loss_weights)
             self.loss = tf.reduce_mean(self.individual_loss)
 
             """

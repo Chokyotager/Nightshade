@@ -27,8 +27,8 @@ with tf.Session() as session:
 
     while True:
 
-        smiles, labels, smiles_raw = d.getData(amount=batch_size)
-        summary, iteration, output, loss, _ = session.run([merged, m.global_step, m.output, m.loss, m.optimiser], feed_dict={m.input: smiles, m.expect: labels, m.batch_size: batch_size})
+        smiles, labels, weights, smiles_raw = d.getData(amount=batch_size)
+        summary, iteration, output, loss, _ = session.run([merged, m.global_step, m.output, m.loss, m.optimiser], feed_dict={m.input: smiles, m.expect: labels, m.batch_size: batch_size, m.loss_weights: weights})
 
         print("Iteration {}, loss: {}".format(iteration, loss))
         print("E: {}, O: {}".format(labels, output))
