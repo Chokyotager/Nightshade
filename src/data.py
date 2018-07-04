@@ -201,9 +201,9 @@ class Scorer (Data):
         self.index = 0
 
     def getEvaluations (self):
-        return self.getData(amount=self.smiles_length, shuffle=False)
+        return self.getData(amount=self.smiles_length, shuffle=False, map_neutrals=True)
 
-class Validator (Data):
+class Validator (Scorer):
 
     def __init__ (self):
 
@@ -258,6 +258,6 @@ class Validator (Data):
 
     def getValidationSet (self, amount=20):
 
-        smiles, labels, weights, smiles_raw = self.getData(amount=amount, shuffle=True)
+        smiles, labels, weights, smiles_raw = self.getData(amount=amount, shuffle=True, map_neutrals=False)
 
         return smiles, labels, weights
