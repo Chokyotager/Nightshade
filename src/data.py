@@ -71,7 +71,7 @@ class Data ():
         for i in range(amount):
 
             smile_raw = self.smiles[self.index % self.smiles_length]
-            smile = self.indexSmiles(smile_raw, padding=300)
+            smile = self.indexSmiles(smile_raw, padding=400)
             label, weight = self.createLabels(self.compounds[smile_raw]["labels"], self.compounds[smile_raw]["negative"], map_neutrals=map_neutrals)
 
             smiles_raw.append(smile_raw)
