@@ -4,7 +4,7 @@ import tensorflow as tf
 import os
 
 main_dir = os.path.dirname(os.path.abspath(__file__))
-run_name = "Solanaceae-K"
+run_name = "Solanaceae-N"
 
 d = data.Data()
 v = data.Validator()
