@@ -3,7 +3,7 @@ import tensorflow as tf
 class Model ():
 
     # Sol-L: 300, 2
-    def __init__ (self, smiles_vocabulary, rnn_size=[16, 6], classification_size=12, dropout=True):
+    def __init__ (self, smiles_vocabulary, rnn_size=[16, 2], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -75,8 +75,15 @@ class Model ():
 
             last_output = rnn_output[:,-1]
 
-            dense1 = tf.layers.dense(last_output, 128, activation=tf.nn.selu)
-            dense2 = tf.layers.dense(dense1, 128, activation=tf.nn.selu)
+            """
+            Batch normalisation is used
+            as a regularisation technique
+            """
+
+            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9)
+            dense1 = tf.layers.dense(bn1, 128, activation=tf.nn.selu)
+            bn2 = tf.layers.batch_normalization(dense1, momentum=0.9)
+            dense2 = tf.layers.dense(bn2, 128, activation=tf.nn.selu)
 
             logits = tf.layers.dense(dense2, self.classification_size, activation=None)
 
@@ -107,5 +114,5 @@ class Model ():
             self.global_step = tf.Variable(0, dtype=tf.int32, trainable=False)
             increment_global_step = tf.assign(self.global_step, self.global_step + 1)
 
-            optimiser = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.92, beta2=0.99)
+            optimiser = tf.train.AdamOptimizer(learning_rate=0.0005, beta1=0.92, beta2=0.99)
             self.optimiser = tf.group([clipGradients(optimiser, self.individual_loss, None, 5), increment_global_step])
