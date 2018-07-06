@@ -133,5 +133,3 @@ class Model ():
 
             optimiser = tf.train.AdamOptimizer(learning_rate=0.0005, beta1=0.92, beta2=0.99)
             self.optimiser = tf.group([clipGradients(optimiser, self.individual_loss, None, 5), increment_global_step])
-
-Model([3, 3, 3])
