@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="nightshade-div"><img id="nightshade" src="https://c1.staticflickr.com/3/2860/8966823588_b8c7a6439f_b.jpg" alt="deadly nightshade"></div>
+    <br>
+    <div class="title">Nightshade: {model_name} model evaluation</div>
+    <br>
+    <div class="report">Tox21 dataset model evaluation analysis.</div>
+    <div class="report">This is a computer generated report.</div>
+    <br>
+    <div class="report">{time}</div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="section">
+    <div class="header">Overview</div>
+    <table>
+      <tr>
+        <th>-</th>
+        <th>Amount</th>
+      </tr>
+      <tr>
+        <td>Compounds tested</td>
+        <td>{compounds_tested}</td>
+      </tr>
+      <tr>
+        <td>Iterations trained</td>
+        <td>{iterations_trained}</td>
+      </tr>
+    </table>
+    </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="section">
+    <div class="header">Statistical overview</div>
+    <table>
+      <tr>
+        <th>Class</th>
+        <th>Accounted</th>
+        <th>Positive</th>
+        <th>&nbsp</th>
+        <th>ROC AUC</th>
+        <th>&nbsp</th>
+        <th>Accuracy</th>
+        <th>Precision</th>
+        <th>False discovery rate</th>
+        <th>False omission rate</th>
+      </tr>
+      {table1_values}
+    </table>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="section">
+    <div class="header">Predictions</div>
+    {correct_graph}
+    <br>
+    {wrong_graph}
+    </div>
+    <br>
+    <br>
+    <br>
+    <div class="section">
+    <div class="header">ROC metric</div>
+    {roc_metric}
+    </div>
+
+  </body>
+
+  <style>
+
+    #nightshade-div {
+      width: 20%;
+      height: auto;
+      left: 32px;
+      float: right;
+    }
+
+    #nightshade {
+      width: 100%;
+    }
+
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        min-width: 35%;
+        max-width: 60%;
+        background-color: #69e5ae;
+    }
+
+    td, th {
+        border: 1px solid green;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: lightgreen;
+    }
+
+    tr:nth-child(1) {
+        color: white;
+        background-color: darkgreen;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .report {
+      text-align: center;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .section {
+      position: relative;
+      left: 1%;
+    }
+
+    .header {
+      text-align: left;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .plot {
+      max-width: 75%;
+      align: center;
+    }
+
+    body {
+      background-color: white;
+      font-family: 'Helvetica', 'Arial', sans-serif;
+    }
+
+  </style>
+</html>
