@@ -80,8 +80,9 @@ class Model ():
                 multiplication = tf.multiply(x, attention_weights)
                 return tf.reduce_sum(multiplication)
 
-            # Attention: (Batch_size, time_batch); time batch scalars
-            self.attention = tf.map_fn(lambda batch_l: tf.map_fn(lambda batch_t: mappingFunction(batch_t), batch_l, dtype=tf.float32), rnn_output, dtype=tf.float32)
+            # Attention: (Batch_size); time batch scalars
+            mapped = tf.map_fn(lambda batch_l: tf.map_fn(lambda batch_t: mappingFunction(batch_t), batch_l, dtype=tf.float32, parallel_iterations=32, swap_memory=True), rnn_output, dtype=tf.float32, parallel_iterations=32, swap_memory=True)
+            self.attention = tf.reduce_sum(mapped, axis=1, keepdims=True)
 
         with tf.variable_scope("Feedforward", reuse=tf.AUTO_REUSE):
 
@@ -97,7 +98,9 @@ class Model ():
             as a regularisation technique
             """
 
-            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9) + self.attention
+            attention_dense = tf.layers.dense(self.attention, 128)
+
+            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9) + attention_dense
             dense1 = tf.layers.dense(bn1, 128, activation=tf.nn.selu)
             bn2 = tf.layers.batch_normalization(dense1, momentum=0.9)
             dense2 = tf.layers.dense(bn2, 128, activation=tf.nn.selu)
