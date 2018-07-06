@@ -3,7 +3,7 @@ import tensorflow as tf
 class Model ():
 
     # Sol-L: 300, 2
-    def __init__ (self, smiles_vocabulary, rnn_size=[16, 2], classification_size=12, dropout=True):
+    def __init__ (self, smiles_vocabulary, rnn_size=[128, 3], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -66,6 +66,23 @@ class Model ():
 
             # TODO: Attention mechanism, perhaps?
 
+        with tf.variable_scope("Attention", reuse=tf.AUTO_REUSE):
+
+            """
+            Bahdanau-like attention mechanism.
+            Outputs of all RNN states are multiplied by weights;
+            summation is performed for every time batch.
+            """
+
+            attention_weights = tf.Variable(tf.random_normal(shape=[rnn_size[0]]), dtype=tf.float32, trainable=True)
+
+            def mappingFunction (x):
+                multiplication = tf.multiply(x, attention_weights)
+                return tf.reduce_sum(multiplication)
+
+            # Attention: (Batch_size, time_batch); time batch scalars
+            self.attention = tf.map_fn(lambda batch_l: tf.map_fn(lambda batch_t: mappingFunction(batch_t), batch_l, dtype=tf.float32), rnn_output, dtype=tf.float32)
+
         with tf.variable_scope("Feedforward", reuse=tf.AUTO_REUSE):
 
             """
@@ -80,7 +97,7 @@ class Model ():
             as a regularisation technique
             """
 
-            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9)
+            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9) + self.attention
             dense1 = tf.layers.dense(bn1, 128, activation=tf.nn.selu)
             bn2 = tf.layers.batch_normalization(dense1, momentum=0.9)
             dense2 = tf.layers.dense(bn2, 128, activation=tf.nn.selu)
@@ -116,3 +133,5 @@ class Model ():
 
             optimiser = tf.train.AdamOptimizer(learning_rate=0.0005, beta1=0.92, beta2=0.99)
             self.optimiser = tf.group([clipGradients(optimiser, self.individual_loss, None, 5), increment_global_step])
+
+Model([3, 3, 3])
