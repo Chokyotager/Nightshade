@@ -3,7 +3,7 @@ import tensorflow as tf
 class Model ():
 
     # Sol-L: 300, 2
-    def __init__ (self, smiles_vocabulary, rnn_size=[128, 3], classification_size=12, dropout=True):
+    def __init__ (self, smiles_vocabulary, rnn_size=[16, 12], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -46,7 +46,7 @@ class Model ():
                 cell = tf.contrib.rnn.GRUCell(size, activation=activation)
 
                 if self.dropout:
-                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.8)
+                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.7)
                 else:
                     return cell
 
@@ -66,24 +66,6 @@ class Model ():
 
             # TODO: Attention mechanism, perhaps?
 
-        with tf.variable_scope("Attention", reuse=tf.AUTO_REUSE):
-
-            """
-            Bahdanau-like attention mechanism.
-            Outputs of all RNN states are multiplied by weights;
-            summation is performed for every time batch.
-            """
-
-            attention_weights = tf.Variable(tf.random_normal(shape=[rnn_size[0]]), dtype=tf.float32, trainable=True)
-
-            def mappingFunction (x):
-                multiplication = tf.multiply(x, attention_weights)
-                return tf.reduce_sum(multiplication)
-
-            # Attention: (Batch_size); time batch scalars
-            mapped = tf.map_fn(lambda batch_l: tf.map_fn(lambda batch_t: mappingFunction(batch_t), batch_l, dtype=tf.float32, parallel_iterations=32, swap_memory=True), rnn_output, dtype=tf.float32, parallel_iterations=32, swap_memory=True)
-            self.attention = tf.reduce_sum(mapped, axis=1, keepdims=True)
-
         with tf.variable_scope("Feedforward", reuse=tf.AUTO_REUSE):
 
             """
@@ -98,9 +80,7 @@ class Model ():
             as a regularisation technique
             """
 
-            attention_dense = tf.layers.dense(self.attention, 128)
-
-            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9) + attention_dense
+            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9)
             dense1 = tf.layers.dense(bn1, 128, activation=tf.nn.selu)
             bn2 = tf.layers.batch_normalization(dense1, momentum=0.9)
             dense2 = tf.layers.dense(bn2, 128, activation=tf.nn.selu)
@@ -134,5 +114,5 @@ class Model ():
             self.global_step = tf.Variable(0, dtype=tf.int32, trainable=False)
             increment_global_step = tf.assign(self.global_step, self.global_step + 1)
 
-            optimiser = tf.train.AdamOptimizer(learning_rate=0.0005, beta1=0.92, beta2=0.99)
+            optimiser = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.92, beta2=0.99)
             self.optimiser = tf.group([clipGradients(optimiser, self.individual_loss, None, 5), increment_global_step])

@@ -4,13 +4,13 @@ import tensorflow as tf
 import os
 
 main_dir = os.path.dirname(os.path.abspath(__file__))
-run_name = "Solanaceae-P"
+run_name = "Solanaceae-U"
 
 d = data.Data()
 v = data.Validator()
-m = model.Model(d.smiles_vocabulary)
+m = model.Model(d.smiles_vocabulary, dropout=False)
 
-batch_size = 5
+batch_size = 20
 validation_batch_size = batch_size
 
 def saveModel (session, directory):
