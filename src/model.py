@@ -3,7 +3,7 @@ import tensorflow as tf
 class Model ():
 
     # Sol-L: 300, 2
-    def __init__ (self, smiles_vocabulary, rnn_size=[16, 12], classification_size=12, dropout=True):
+    def __init__ (self, smiles_vocabulary, rnn_size=[32, 12], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -46,7 +46,7 @@ class Model ():
                 cell = tf.contrib.rnn.GRUCell(size, activation=activation)
 
                 if self.dropout:
-                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.7)
+                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.8)
                 else:
                     return cell
 
@@ -75,17 +75,11 @@ class Model ():
 
             last_output = rnn_output[:,-1]
 
-            """
-            Batch normalisation is used
-            as a regularisation technique
-            """
+            dense1 = tf.layers.dense(last_output, 128, activation=tf.nn.selu)
+            dense2 = tf.layers.dense(dense1, 128, activation=tf.nn.selu)
+            dense3 = tf.layers.dense(dense2, 128, activation=tf.nn.selu)
 
-            bn1 = tf.layers.batch_normalization(last_output, momentum=0.9)
-            dense1 = tf.layers.dense(bn1, 128, activation=tf.nn.selu)
-            bn2 = tf.layers.batch_normalization(dense1, momentum=0.9)
-            dense2 = tf.layers.dense(bn2, 128, activation=tf.nn.selu)
-
-            logits = tf.layers.dense(dense2, self.classification_size, activation=None)
+            logits = tf.layers.dense(dense3, self.classification_size, activation=None)
 
             self.output = tf.nn.sigmoid(logits)
             #self.classification = tf.argmax(self.output, axis=None)
@@ -114,5 +108,5 @@ class Model ():
             self.global_step = tf.Variable(0, dtype=tf.int32, trainable=False)
             increment_global_step = tf.assign(self.global_step, self.global_step + 1)
 
-            optimiser = tf.train.AdamOptimizer(learning_rate=0.0002, beta1=0.92, beta2=0.99)
+            optimiser = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.92, beta2=0.99)
             self.optimiser = tf.group([clipGradients(optimiser, self.individual_loss, None, 5), increment_global_step])
