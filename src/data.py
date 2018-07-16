@@ -58,7 +58,7 @@ class Data ():
 
         self.index = 0
 
-    def getData (self, amount=10, shuffle=True, map_neutrals=False):
+    def getData (self, amount=10, shuffle=True, map_neutrals=False, padding=400):
 
         smiles_raw = list()
         smiles = list()
@@ -71,7 +71,7 @@ class Data ():
         for i in range(amount):
 
             smile_raw = self.smiles[self.index % self.smiles_length]
-            smile = self.indexSmiles(smile_raw, padding=400)
+            smile = self.indexSmiles(smile_raw, padding=padding)
             label, weight = self.createLabels(self.compounds[smile_raw]["labels"], self.compounds[smile_raw]["negative"], map_neutrals=map_neutrals)
 
             smiles_raw.append(smile_raw)
@@ -200,8 +200,8 @@ class Scorer (Data):
 
         self.index = 0
 
-    def getEvaluations (self):
-        return self.getData(amount=self.smiles_length, shuffle=False, map_neutrals=True)
+    def getEvaluations (self, padding=400):
+        return self.getData(amount=self.smiles_length, shuffle=False, map_neutrals=True, padding=padding)
 
 class Validator (Scorer):
 
@@ -256,8 +256,8 @@ class Validator (Scorer):
 
         self.index = 0
 
-    def getValidationSet (self, amount=20):
+    def getValidationSet (self, amount=20, padding=400):
 
-        smiles, labels, weights, smiles_raw = self.getData(amount=amount, shuffle=True, map_neutrals=False)
+        smiles, labels, weights, smiles_raw = self.getData(amount=amount, shuffle=True, map_neutrals=False, padding=padding)
 
         return smiles, labels, weights
