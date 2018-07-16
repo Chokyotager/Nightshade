@@ -3,7 +3,7 @@ import tensorflow as tf
 class Model ():
 
     # Sol-L: 300, 2
-    def __init__ (self, smiles_vocabulary, rnn_size=[32, 12], classification_size=12, dropout=True):
+    def __init__ (self, smiles_vocabulary, rnn_size=[40, 6], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -46,7 +46,7 @@ class Model ():
                 cell = tf.contrib.rnn.GRUCell(size, activation=activation)
 
                 if self.dropout:
-                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.8)
+                    return tf.contrib.rnn.DropoutWrapper(cell, state_keep_prob=1, input_keep_prob=1, output_keep_prob=0.5)
                 else:
                     return cell
 
@@ -75,11 +75,14 @@ class Model ():
 
             last_output = rnn_output[:,-1]
 
-            dense1 = tf.layers.dense(last_output, 128, activation=tf.nn.selu)
-            dense2 = tf.layers.dense(dense1, 128, activation=tf.nn.selu)
-            dense3 = tf.layers.dense(dense2, 128, activation=tf.nn.selu)
+            bn1 = tf.layers.batch_normalization(last_output)
 
-            logits = tf.layers.dense(dense3, self.classification_size, activation=None)
+            dense1 = tf.layers.dense(bn1, 512, activation=tf.nn.selu)
+            dense2 = tf.layers.dense(dense1, 512, activation=tf.nn.selu)
+            dense3 = tf.layers.dense(dense2, 512, activation=tf.nn.selu)
+            dense4 = tf.layers.dense(dense3, 512, activation=tf.nn.selu)
+
+            logits = tf.layers.dense(dense4, self.classification_size, activation=None)
 
             self.output = tf.nn.sigmoid(logits)
             #self.classification = tf.argmax(self.output, axis=None)
@@ -88,7 +91,7 @@ class Model ():
 
             def clipGradients (x, loss, vars, value):
               grads = x.compute_gradients(loss, var_list=vars)
-              clipped = [(tf.clip_by_norm(gradx, value), var) for gradx, var in grads if gradx != None]
+              clipped = [(tf.clip_by_value(gradx, -value, value), var) for gradx, var in grads if gradx != None]
               opt = x.apply_gradients(clipped)
               return opt
 
