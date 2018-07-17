@@ -3,7 +3,7 @@ import tensorflow as tf
 class Model ():
 
     # Sol-L: 300, 2
-    def __init__ (self, smiles_vocabulary, rnn_size=[86, 6], classification_size=12, dropout=True):
+    def __init__ (self, smiles_vocabulary, rnn_size=[32, 8], classification_size=12, dropout=True):
 
         assert isinstance(smiles_vocabulary, list)
         assert isinstance(rnn_size, tuple) or isinstance(rnn_size, list)
@@ -109,5 +109,5 @@ class Model ():
             self.global_step = tf.Variable(0, dtype=tf.int32, trainable=False)
             increment_global_step = tf.assign(self.global_step, self.global_step + 1)
 
-            optimiser = tf.train.AdamOptimizer(learning_rate=0.001, beta1=0.92, beta2=0.99)
+            optimiser = tf.train.AdamOptimizer(learning_rate=0.0005, beta1=0.92, beta2=0.99)
             self.optimiser = tf.group([clipGradients(optimiser, self.individual_loss, None, 5), increment_global_step])
